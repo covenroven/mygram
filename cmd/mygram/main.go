@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/covenroven/mygram/api"
@@ -34,11 +35,12 @@ func router(app *api.App) *gin.Engine {
 
 	r.Use(gin.CustomRecovery(func(c *gin.Context, recovered interface{}) {
 		if err, ok := recovered.(string); ok {
-			c.JSON(http.StatusInternalServerError, err)
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "Something wrong occured",
+			})
 		}
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"message": "Something wrong occured",
-		})
+		c.AbortWithStatus(http.StatusInternalServerError)
 	}))
 
 	auth := r.Group("users")
